@@ -95,16 +95,65 @@ Now that our shapefiles are in the correct projection, we can rewrite them as js
 
 ```
 // generic example
-$ ogr2ogr -f "GeoJSON" ../abq-schools.json abq-schools-prj.shp
+$ ogr2ogr -f "GeoJSON" ../new-json-name.json shapefile-name.shp
 
 // school locations example
 $ ogr2ogr -f "GeoJSON" ../abq-schools.json abq-schools-prj.shp
 ```
 
+Before performing anymore geoprocessing, we want to simplify the `PathType` column in the bike trails json. Our goal is to create data-driven styles based on this field, so the original highly-detailed category descriptions are too cumbersome. We can use the QGIS Field Calculator to create a new simplified `path_type` column, comprised of the following `PathType`s:
+
+
+1. Proposed
+    1. (Proposed) Bike Blvd.
+    2. (Proposed) Bike Lane
+    3. (Proposed) Bike Route
+    4. (Proposed) Trail Paved
+    5. (Proposed) Trail Unpaved
+2. Shared Roadway (Bikes and Automobiles)
+    1. BikeBlvd - A shared roadway optimized by bicycle traffic.
+    2. BikeLane - A portion of the street with a designated lane for bicycles.
+    3. BikeRoute - Cars and bicycles share the street.
+    4. Buffered Lane - Conventional bike lanes paired with a designated buffer space.
+3. Bikes and Pedestrians Only
+    1. Crossing- Bicycle or pedestrian under/over crossings.
+    2. Hiking trail - An unpaved trail open to foot traffic only.
+    3. Paved Multiple Use Trail - A paved trail closed to automotive traffic.
+    4. Unpaved Multiple Use Trail  An unpaved trail closed to automotive traffic.
+4. Other
+    1. NMDOT - A Bicycle facility Owned and Maintained by NMDOT with different design standards than CABQ.
+    
+
+
+
+
+
 After inspecting the bike trails shapefile in QGIS, we already know that we don't want county-wide trails; rather, we'd like to see what the City of Albuquerque has in place. We can filter for this data with the command:
 
 ```
-ogr2ogr -f "GeoJSON" -where "PhysicalJu='City of Albuquerque'" bike-trails-filtered-2.json bike-trails-filtered.json
+ogr2ogr -f "GeoJSON" -where "PhysicalJu='City of Albuquerque'" bike-trails-filtered.json bike-trails.json
 ```
 
 In this case, `PhysicalJu` is the column name that defines the location/governing body of each bike trail.
+
+Unfortunately, we were not very astute data scientists and didn't capture everything in our first filtering of the bike-trails json. We will ultimately want to filter on the `PathType` variable, which is comprised of overly-detailed category names. To avoid having to type out these names manually when we style our web map, we use QGIS to create a new simplified `type` column, comprised of the following `PathType`s:
+
+    CASE
+WHEN  "PathType" = '(Proposed) Bike Blvd.' THEN 'Proposed' 
+WHEN  "PathType" = '(Proposed) Bike Lane' THEN 'Proposed'
+WHEN  "PathType" = '(Proposed) Bike Route' THEN 'Proposed' 
+WHEN  "PathType" = '(Proposed) Trail Paved' THEN 'Proposed' 
+WHEN  "PathType" = '(Proposed) Trail Unpaved' THEN 'Proposed' 
+
+WHEN "PathType" = 'BikeBlvd - A shared roadway optimized by bicycle traffic.'  THEN 'Shared Roadway (Bikes and Automobiles)' 
+WHEN  "PathType" = 'BikeLane - A portion of the street with a designated lane for bicycles.' THEN 'Shared Roadway (Bikes and Automobiles)' 
+WHEN  "PathType" = 'BikeRoute - Cars and bicycles share the street.' THEN 'Shared Roadway (Bikes and Automobiles)' 
+WHEN  "PathType" = 'Buffered Lane - Conventional bike lanes paired with a designated buffer space.' THEN 'Shared Roadway (Bikes and Automobiles)' 
+
+WHEN  "PathType" = 'Crossing- Bicycle or pedestrian under/over crossings.' THEN 'Bikes and Pedestrians Only'
+WHEN  "PathType" = 'Hiking trail - An unpaved trail open to foot traffic only.' THEN 'Bikes and Pedestrians Only'
+WHEN  "PathType" = 'Paved Multiple Use Trail - A paved trail closed to automotive traffic.' THEN 'Bikes and Pedestrians Only'
+WHEN  "PathType" = 'Unpaved Multiple Use Trail  An unpaved trail closed to automotive traffic.' THEN 'Bikes and Pedestrians Only'
+
+WHEN  "PathType" = 'NMDOT - A Bicycle facility Owned and Maintained by NMDOT with different design standards than CABQ.' THEN 'Other'
+END
