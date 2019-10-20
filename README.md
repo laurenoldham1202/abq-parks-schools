@@ -13,21 +13,19 @@ Bernalillo County boundaries data provided by the [Bernalillo County Planning an
 The City of Albuquerque, New Mexico is a sprawling city that wants to cut down its reliance on automobiles. Their main goal is to become a bike-friendly town, allowing students to safely and quickly bike to and from public schools within the city limits. Their first step to analysis is to plot bike trails and school locations on a map. The entirety of Bernalillo County eventually wants to follow suit.
 
 ## File Structure
-The layout and original file names are as follows:
+The layout and original directory names are as follows:
 1. abq-trails-schools
-    a. index.html
-    b. README.md
-    c. data/
-        i. city-limits
-        ii. biketrails
-        iii. CountyBoundaries
-        iv. apsschools // (schoolLocations.shp is the file with all school types combined)
+    1. index.html
+    2. README.md
+    3. data/
+        1. city-limits
+        2. biketrails
+        3. CountyBoundaries
+        4. apsschools // (schoolLocations.shp is the file with all school types combined)
 
 ## Geoprocessing
 ### Reprojecting
-We must first check each shapefile's Coordinate Reference System and projection. We must first navigate to each shapefile directory 
-
-We can do this in terminal with the following command:
+We must first check each shapefile's Coordinate Reference System and projection. First navigate to each shapefile directory with the command `$ cd directoryName` in terminal, then issue the following command:
 
 ```
 // generic example
@@ -37,7 +35,7 @@ $ ogrinfo -so shapefileName.shp shapefileName
 $ ogrinfo -so schoolLocations.shp schoolLocations
 ```
 
-The `ogrinfo -so` command revealed the following projection info:
+The `ogrinfo -so` command reveals the following projection info:
 1. Bernalillo County boundary: NAD83
 2. Albuquerque city limits boundary: WG84
 3. School locations: NAD83
@@ -102,3 +100,11 @@ $ ogr2ogr -f "GeoJSON" ../abq-schools.json abq-schools-prj.shp
 // school locations example
 $ ogr2ogr -f "GeoJSON" ../abq-schools.json abq-schools-prj.shp
 ```
+
+After inspecting the bike trails shapefile in QGIS, we already know that we don't want county-wide trails; rather, we'd like to see what the City of Albuquerque has in place. We can filter for this data with the command:
+
+```
+ogr2ogr -f "GeoJSON" -where "PhysicalJu='City of Albuquerque'" bike-trails-filtered-2.json bike-trails-filtered.json
+```
+
+In this case, `PhysicalJu` is the column name that defines the location/governing body of each bike trail.
