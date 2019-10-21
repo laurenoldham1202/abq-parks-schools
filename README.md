@@ -123,3 +123,6 @@ Before performing anymore geoprocessing, we want to simplify the `PathType` colu
 4. Other
     1. NMDOT - A Bicycle facility Owned and Maintained by NMDOT with different design standards than CABQ.
     
+```
+ogr2ogr -f "GeoJSON" -where "PhysicalJu='City of Albuquerque' OR PhysicalJu='Bernalillo County' AND path_type!='Other'" bike-trails-filtered.json bike-trails.json
+```
