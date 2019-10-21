@@ -123,3 +123,35 @@ Before performing anymore geoprocessing, we want to simplify the `PathType` colu
 4. Other
     1. NMDOT - A Bicycle facility Owned and Maintained by NMDOT with different design standards than CABQ.
     
+With the new simplified `path_type` column, we also want to filter our data for locations in City of Albuquerque and Bernalillo County. We accomplish this by the ogr command:
+
+    
+```
+ogr2ogr -f "GeoJSON" -where "PhysicalJu='City of Albuquerque' OR PhysicalJu='Bernalillo County'" bike-trails-filtered.json bike-trails.json
+```
+
+We've created a new `bike-trails-filtered.json` file from the original `bike-trails.json`. We can now check the size of our files by navigating to the `/data` directory and issuing the command `$ ls -l`. We see that our filtered bike trails data is quite large:
+
+```
+total 67240
+drwx------@ 15 Lauren  staff       480 Oct 16 08:44 CountyBoundary
+-rw-r--r--   1 Lauren  staff     77241 Oct 16 08:57 abq-schools.json
+drwx------@ 13 Lauren  staff       416 Oct 16 08:47 apsschools
+-rw-r--r--   1 Lauren  staff     68117 Oct 16 08:55 bernalillo-county.json
+-rw-r--r--   1 Lauren  staff  11864866 Oct 20 17:50 bike-trails-filtered.json
+-rw-r--r--   1 Lauren  staff  13898781 Oct 20 07:59 bike-trails.json
+drwx------@ 12 Lauren  staff       384 Oct 16 08:48 biketrails
+drwxr-xr-x   8 Lauren  staff       256 Oct 16 09:06 city-limits
+-rw-r--r--   1 Lauren  staff    868616 Oct 16 09:07 city-limits.json
+```
+
+To rectify this, we import the json into [MapShaper](https://mapshaper.org/) to simplify it to 1%. We save fix any line breaks and export as a GeoJSON named `bike-trails-simp.json`. We check our file sizes again with `$ ls -l` and see that the file size has effectively been cut in half:
+
+```
+-rw-r--r--   1 Lauren  staff  11864866 Oct 20 17:50 bike-trails-filtered.json
+-rw-r--r--@  1 Lauren  staff   5925293 Oct 21 10:40 bike-trails-simp.json
+```
+
+We're now ready to start importing our data into an interactive Leaflet map!
+
+## Interactive Map
