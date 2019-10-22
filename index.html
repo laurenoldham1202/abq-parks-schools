@@ -1,186 +1,203 @@
-
-
 <!DOCTYPE html>
 
 <html lang='en'>
-<head>
-    <meta charset='utf-8' />
 
-    <title>Albuquerque Urban Geographies</title>
-    <link
-            rel='stylesheet'
-            href='https://unpkg.com/leaflet@1.3.1/dist/leaflet.css'
-    />
-    <style>
-        body,
-        #map {
-            position: absolute;
-            width: 100%;
-            top: 0;
-            bottom: 0;
-            margin: 0;
-            padding: 0;
-            background: rgba(0, 0, 0, 0.75);
-        }
-        /* interactive tooltip styling */
-        .tooltip {
-            color: white;
-            background: #295b97;
-            border: 0;
-            font-size: 1.3em;}
-    </style>
+<head>
+  <meta charset='utf-8' />
+
+  <title>Albuquerque Urban Geographies</title>
+  <link rel='stylesheet' href='https://unpkg.com/leaflet@1.3.1/dist/leaflet.css' />
+  <style>
+    body,
+    #map {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 0;
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+    /* interactive tooltip styling */
+    .tooltip {
+      color: white;
+      background: #295b97;
+      border: 0;
+      font-size: 1.3em;
+    }
+  </style>
 </head>
 
 <body>
-<div id='map'></div>
+  <div id='map'></div>
 
-<!-- setup environment -->
-<script src='https://unpkg.com/leaflet@1.3.1/dist/leaflet.js'></script>
-<script
-        src='https://code.jquery.com/jquery-3.2.1.min.js'
-        integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4='
-        crossorigin='anonymous'
-></script>
+  <!-- setup environment -->
+  <script src='https://unpkg.com/leaflet@1.3.1/dist/leaflet.js'></script>
+  <script src='https://code.jquery.com/jquery-3.2.1.min.js' integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=' crossorigin='anonymous'></script>
 
-<!-- setup map options -->
-<script>
+  <!-- setup map options -->
+  <script>
     const options = {
-        center: [35.086905, -106.645317],
-        zoom: 12,
-        zoomLevel: 0,
-        minZoom: 11,
-        maxZoom: 16,
-        maxBounds: [[35.269168, -106.383361], [34.91915, -106.84547]]
+      center: [35.086905, -106.645317],
+      zoom: 12,
+      zoomLevel: 0,
+      minZoom: 11,
+      maxZoom: 16,
+      maxBounds: [
+        [35.269168, -106.383361],
+        [34.91915, -106.84547]
+      ]
     };
     const map = L.map('map', options);
 
-//  write options for each map layer
+    //  write options for each map layer
     const countyOptions = {
-        color: "#263238",
-        fillOpacity: 0,
-        opacity: 1,
-        weight: .1
-    };
-    
-    const cityLimitsOptions = {
-        fillOpacity: .25,
-        color: "#616161",
-        opacity: .5,
-        weight: 2
+      color: "#36281A",
+      opacity: 1,
+      weight: 1
     };
 
-// proposed will utilize opacity
+    const cityLimitsOptions = {
+      fillOpacity: .25,
+      color: "#41362C",
+      weight: 1
+    };
+
+    // proposed will utilize opacity
     const proposedOptions = {
-        color: "#295b97",
-        weight: 0, 
-        opacity: .5 
+      color: "#93280B",
+      weight: 1,
+      opacity: .5,
+      dashArray: '5, 5',
     };
 
     const sharedOptions = {
-        color: "#fdd835",
-        weight: .5
+      color: "#AB5A18",
+      weight: 1
     };
 
     const notSharedOptions = {
-        color: "#e0e0e0",
-        weight: .5
+      color: "#BCB065",
+      weight: 1
     };
 
     const otherOptions = {
-        color: "#7cb342",
-        weight: .25
+      color: "red",
+      weight: 1
     };
 
-// below doesn't affect default leaflet marker (blue pin)
+    // below doesn't affect default leaflet marker (blue pin)
     const schoolsOptions = {
-        color: 'red',
-        radius: 2,
-        opacity: .1
+      color: '#20a4a6',
+      radius: 1,
+      opacity: 1
     };
 
 
 
-// place labels above map 
+    // place labels above map
     map.createPane('labels');
     map.getPane('labels').style.zindex = 650;
     map.getPane('labels').style.pointerEvents = 'none';
 
-// load carto labels basemap
+    // load carto labels basemap
 
-   L.tileLayer(
-       'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',
-       {
-           attribution: '©OpenStreetMap, ©CartoDB',
-           pane: 'labels',
-       }
-   ).addTo(map);
-
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        attribution: '©OpenStreetMap, ©CartoDB',
+        pane: 'labels',
+      }
+    ).addTo(map);
 
 
-// jqeury geojsons and draw map
+
+    // jqeury geojsons and draw map
     $.when(
-        $.getJSON('data/bernalillo-county.json'),
-        $.getJSON('data/city-limits.json'),
-        $.getJSON('data/bike-trails.json'),
-        $.getJSON('data/abq-schools.json'),
+      $.getJSON('data/bernalillo-county.json'),
+      $.getJSON('data/city-limits.json'),
+      $.getJSON('data/bike-trails-simp.json'),
+      $.getJSON('data/abq-schools.json'),
     ).done((county, cityLimits, bikeTrails, schools) => {
-        drawMap(county, cityLimits, bikeTrails, schools);
+      drawMap(county, cityLimits, bikeTrails, schools);
     });
 
-// define bikeTrailsOptions function
-    const bikeTrailsOptions = 
-        function(feature) {
-                // shortcut to variable
-                let type = feature.properties.path_type;
-                // assign options
-                return type === "Proposed"
-                ? proposedOptions
-                : type === "Shared"
-                ? sharedOptions
-                : type === "Bikes and Pedestrians Only"
-                ? notSharedOptions
-                : otherOptions;
-            };
+    // define bikeTrailsOptions function
+    const bikeTrailsOptions =
+      function(feature) {
+        // shortcut to variable
+        let type = feature.properties.path_type;
+        // assign options
+        return type === "Proposed" ?
+          proposedOptions :
+          type === "Shared Roadway (Bikes and Automobiles)" ?
+          sharedOptions :
+          type === "Bikes and Pedestrians Only" ?
+          notSharedOptions :
+          otherOptions;
+      };
 
-// define drawmap function
+    // define drawmap function
     function drawMap(countyData, cityLimitsData, bikeTrailsData, schoolsData) {
-        L.geoJson(countyData, {
-            style: countyOptions
-            }).addTo(map);
-        // L.geoJson(cityLimitsData, {
-        //     style: cityLimitsOptions
-        //     }).addTo(map);
-        L.geoJson(bikeTrailsData, {
-            // style each feature
-            style: bikeTrailsOptions,
-            // rollover tooltip functionality 
-            onEachFeature: function(feature, layer) {
-                // shortut to variable
-                let tooltip = feature.properties.ParentPath;
-                // bind the tooltip to the layer
-                layer.bindTooltip(tooltip, {
-                sticky: true,
-                className: "tooltip"
-                });
-                // visual affordance on mouseover
-                layer.on("mouseover", function(e) {
-                this.setStyle({
-                    color: "red"
-                });
-                });
-                // use existing option to reset the styles on mouseout
-                layer.on("mouseout", function(e) {
-                this.setStyle(bikeTrailsOptions);
-                });
+      L.geoJson(countyData, {
+        style: countyOptions
+      }).addTo(map);
+
+      L.geoJson(cityLimitsData, {
+          style: cityLimitsOptions
+          }).addTo(map);
+
+      L.geoJson(bikeTrailsData, {
+        style: bikeTrailsOptions,
+        // rollover tooltip functionality
+        // onEachFeature: function(feature, layer) {
+        //   // shortut to variable
+        //   let tooltip = feature.properties.ParentPath;
+        //   // bind the tooltip to the layer
+        //   layer.bindTooltip(tooltip, {
+        //     sticky: true,
+        //     className: "tooltip"
+        //   });
+        //   // visual affordance on mouseover
+        //   layer.on("mouseover", function(e) {
+        //     this.setStyle({
+        //       color: "red"
+        //     });
+        //   });
+        //   // use existing option to reset the styles on mouseout
+        //   layer.on("mouseout", function(e) {
+        //     this.setStyle(bikeTrailsOptions(e.target.feature));
+        //   });
+        // }
+      }).addTo(map);
+
+      L.geoJson(schoolsData, {
+        style: schoolsOptions,
+        pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng);
+                },
+        onEachFeature: function(feature, layer) {
+          // shortcut to variable
+          let tooltip = feature.properties.NAME;
+          // bind the tooltip to the layer
+          layer.bindTooltip(tooltip, {
+            sticky: true,
+            className: "tooltip"
+          });
+          // visual affordance on mouseover
+          layer.on("mouseover", function(e) {
+            this.setStyle({
+              color: "white"
+            });
+          });
+          // use existing option to reset the styles on mouseout
+          layer.on("mouseout", function(e) {
+            this.setStyle(schoolsOptions);
+          });
         }
-        }).addTo(map);
-
-        L.geoJson(schoolsData, {
-            style: schoolsOptions
-        }).addTo(map);
+      }).addTo(map);
     }
-
-
-</script>
+  </script>
 </body>
+
 </html>
