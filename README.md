@@ -155,3 +155,81 @@ To rectify this, we import the json into [MapShaper](https://mapshaper.org/) to 
 We're now ready to start importing our data into an interactive Leaflet map!
 
 ## Interactive Map
+
+This webmap will utilize Leaflet libraries to allow for cartographic visualization and interactivity within the browser.
+
+Other libraries used in this map
+ - jquery to request json data from the remote repository
+
+### Establish a figure/ground perspective and a visual hierarchy.
+
+First its important analyze the data and consider what this information is intended to represent.
+
+1. County Shape (a polygon encompassing nearly all the other data)
+2. City Limit Shape (a polygon mostly within the county data above)
+3. Trail Lines (different types of lines constrained within city limits)
+    1. Proposed
+    2. Shared
+    3. Bikes and Pedestrians Only
+    4. Other
+4. School Points (points scattered within City Limits)
+
+County and City Limits function in the background atop a dark baselayer, with trails and schools in the foreground.  The background layers should be a few shades lighter than the baselayer.  Foreground layers will have more contrast than these layers.  
+
+Trails is the most interesting layer, as it has subtypes which allow for graphical variation,and will define most viewer's knowledge of the geography of Albuquerque, due to concentrations and distribution of trail data. The majority of which is along or parallel to existing transportation corridors.  
+
+Schools sits atop all other layers and stands out, scattered across the map page, as it are the only point data.
+
+The map is bounded to keep the viewer from slipping too far away from the map data, while zoom limits are also in place to prevent a user from zooming too far away from the data, while also conveying the extent of the dataset.  
+
+#### Layering & Styling
+To achieve the desired figure/ground and related hierarchy, the following layers and colors were established. 
+
+0. Baselayer (achieved in CSS as parameter for `map`  `background: rgba(0, 0, 0, 0.75`);
+1. County (#263238 - very dark grayish blue)
+2. City Limits (#616161 - very dark gray )
+3. Trails
+    1. Proposed (orange with half opacity)
+    3. Shared (#FDD835 - yellow)
+    4. Bikes and Pedestrians Only (#e0e0e0 - very light gray)
+    5. Other (#7cb342 - moderate green)
+    <!-- 6. Hiking Only ( ) -->
+<!-- would be interesting here to consider subtypes for proposed (shared or bike/ped only which could be half opacity of the existing trail color) -->
+ -->
+4. Schools (##0097a7 - dark cyan)
+
+<!-- proposed colors -->
+<!-- 
+#ffa000 - pure orange
+#FDD835 - yellow
+#e0e0e0 - very light gray
+#616161 - very dark gray 
+#263238 - very dark grayish blue
+#0097a7 - dark cyan
+#7cb342 - moderate green
+-->
+
+### Interactivity
+#### map constraints
+Constraining the browser to the area of interest is achieved via limiting Zoom levels and bounding the map to a geographic area.  
+
+Initial zoom was set to fill the frame with data.  
+
+```javascript
+    const options = {
+        center: [35.086905, -106.645317],
+        zoom: 12, 
+        zoomLevel: 0,
+        minZoom: 11,
+        maxZoom: 16,
+        maxBounds: [[35.269168, -106.383361], [34.91915, -106.84547]]
+    };
+```
+
+#### Tooltip
+
+### Rollover response on Trails Layer
+
+Upon rollover a tooltip will follow the mouse cursor showing showing concatenated string with most relevant data (name, type, length, etc.).
+
+ 
