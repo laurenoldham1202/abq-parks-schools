@@ -22,10 +22,32 @@
     /* interactive tooltip styling */
     .tooltip {
       color: white;
-      background: #295b97;
+      background: #0B7072;
       border: 0;
       font-size: 1.3em;
     }
+
+    .info {
+      padding: 6px 8px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+
+    .legend {
+      line-height: 20px;
+      color: #555;
+    }
+
+    .legend i {
+      width: 13px;
+      height: 13px;
+      float: left;
+      margin-right: 8px;
+    }
+
   </style>
 </head>
 
@@ -53,48 +75,52 @@
 
     //  write options for each map layer
     const countyOptions = {
-      color: "#36281A",
-      opacity: 1,
-      weight: 1
+      fillColor: '#6F4926',
+      fillOpacity: 0.4,
+      stroke: false,
     };
 
     const cityLimitsOptions = {
       fillOpacity: .25,
-      color: "#41362C",
-      weight: 1
+      color: '#616161',
+      opacity: .5,
+      weight: 2
     };
 
     // proposed will utilize opacity
     const proposedOptions = {
-      color: "#93280B",
+      color: '#A62706',
       weight: 1,
-      opacity: .5,
-      dashArray: '5, 5',
+      opacity: 1,
+      dashArray: (3, 3),
     };
 
     const sharedOptions = {
-      color: "#AB5A18",
-      weight: 1
+      color: '#CF6709',
+      weight: 2.5,
+      opacity: 0.5,
     };
 
     const notSharedOptions = {
-      color: "#BCB065",
-      weight: 1
+      color: '#F8ED88',
+      weight: 1,
+      opacity: 0.9,
     };
 
     const otherOptions = {
-      color: "red",
-      weight: 1
+      color: '#A28FC7',
+      weight: 1,
+      opacity: 1,
     };
 
-    // below doesn't affect default leaflet marker (blue pin)
     const schoolsOptions = {
-      color: '#20a4a6',
-      radius: 1,
-      opacity: 1
+      fillColor: '#10B0B3',
+      radius: 4,
+      color: '#15F1F6',
+      opacity: 1,
+      weight: 1,
+      fillOpacity: 0.9,
     };
-
-
 
     // place labels above map
     map.createPane('labels');
@@ -111,7 +137,6 @@
     ).addTo(map);
 
 
-
     // jqeury geojsons and draw map
     $.when(
       $.getJSON('data/bernalillo-county.json'),
@@ -125,15 +150,14 @@
     // define bikeTrailsOptions function
     const bikeTrailsOptions =
       function(feature) {
+
         // shortcut to variable
         let type = feature.properties.path_type;
+
         // assign options
-        return type === "Proposed" ?
-          proposedOptions :
-          type === "Shared Roadway (Bikes and Automobiles)" ?
-          sharedOptions :
-          type === "Bikes and Pedestrians Only" ?
-          notSharedOptions :
+        return type === 'Proposed' ? proposedOptions :
+          type === 'Shared Roadway (Bikes and Automobiles)' ? sharedOptions :
+          type === 'Bikes and Pedestrians Only' ? notSharedOptions :
           otherOptions;
       };
 
@@ -144,58 +168,69 @@
       }).addTo(map);
 
       L.geoJson(cityLimitsData, {
-          style: cityLimitsOptions
-          }).addTo(map);
+        style: cityLimitsOptions
+      }).addTo(map);
 
       L.geoJson(bikeTrailsData, {
         style: bikeTrailsOptions,
-        // rollover tooltip functionality
-        // onEachFeature: function(feature, layer) {
-        //   // shortut to variable
-        //   let tooltip = feature.properties.ParentPath;
-        //   // bind the tooltip to the layer
-        //   layer.bindTooltip(tooltip, {
-        //     sticky: true,
-        //     className: "tooltip"
-        //   });
-        //   // visual affordance on mouseover
-        //   layer.on("mouseover", function(e) {
-        //     this.setStyle({
-        //       color: "red"
-        //     });
-        //   });
-        //   // use existing option to reset the styles on mouseout
-        //   layer.on("mouseout", function(e) {
-        //     this.setStyle(bikeTrailsOptions(e.target.feature));
-        //   });
-        // }
       }).addTo(map);
 
       L.geoJson(schoolsData, {
         style: schoolsOptions,
+
+        // style locations as points instead of markers
         pointToLayer: (feature, latlng) => {
-                return L.circleMarker(latlng);
-                },
+          return L.circleMarker(latlng);
+        },
         onEachFeature: function(feature, layer) {
-          // shortcut to variable
-          let tooltip = feature.properties.NAME;
+
+          // shortcut to variable, add school grade level
+          let tooltip = `${ feature.properties.NAME } ${ feature.properties.GRADELEVEL } School `;
+
           // bind the tooltip to the layer
           layer.bindTooltip(tooltip, {
-            sticky: true,
-            className: "tooltip"
+            sticky: false,
+            className: 'tooltip'
           });
+
           // visual affordance on mouseover
-          layer.on("mouseover", function(e) {
+          layer.on('mouseover', function(e) {
             this.setStyle({
-              color: "white"
+              radius: 8,
             });
           });
-          // use existing option to reset the styles on mouseout
-          layer.on("mouseout", function(e) {
+
+          // reset default styles
+          layer.on('mouseout', function(e) {
             this.setStyle(schoolsOptions);
           });
         }
       }).addTo(map);
+    }
+
+    var legend = L.control({ position: 'bottomleft' });
+
+    // build legend and add to map
+    legend.onAdd = (map) => {
+      var div = L.DomUtil.create('div', 'info legend');
+      var types = [ 'Proposed Bike Trail', 'Shared Roadway (Bikes and Automobiles)', 'Bikes and Pedestrians Only', 'Other' ];
+
+      types.forEach(type => {
+        div.innerHTML += `<i style="border: ${ styleLegendBorder(type) }"></i> ${ type }<br>`;
+      });
+
+      div.innerHTML += `<i style="border-radius: 25px; border: 1px solid #15F1F6; background-color: #10B0B3;"></i> School<br>`
+
+      return div;
+    };
+
+    legend.addTo(map);
+
+    function styleLegendBorder(type) {
+      return type === 'Proposed Bike Trail' ? '2px dotted #A62706' :
+              type === 'Shared Roadway (Bikes and Automobiles)' ? '2px solid #CF6709' :
+                type === 'Bikes and Pedestrians Only' ? '2px solid #F8ED88' :
+                  '2px solid #A28FC7';
     }
   </script>
 </body>
