@@ -26,6 +26,28 @@
       border: 0;
       font-size: 1.3em;
     }
+
+    .info {
+      padding: 6px 8px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+
+    .legend {
+      line-height: 20px;
+      color: #555;
+    }
+
+    .legend i {
+      width: 13px;
+      height: 13px;
+      float: left;
+      margin-right: 8px;
+    }
+
   </style>
 </head>
 
@@ -184,6 +206,31 @@
           });
         }
       }).addTo(map);
+    }
+
+    var legend = L.control({ position: 'bottomleft' });
+
+    // build legend and add to map
+    legend.onAdd = (map) => {
+      var div = L.DomUtil.create('div', 'info legend');
+      var types = [ 'Proposed Bike Trail', 'Shared Roadway (Bikes and Automobiles)', 'Bikes and Pedestrians Only', 'Other' ];
+
+      types.forEach(type => {
+        div.innerHTML += `<i style="border: ${ styleLegendBorder(type) }"></i> ${ type }<br>`;
+      });
+
+      div.innerHTML += `<i style="border-radius: 25px; border: 1px solid #15F1F6; background-color: #10B0B3;"></i> School<br>`
+
+      return div;
+    };
+
+    legend.addTo(map);
+
+    function styleLegendBorder(type) {
+      return type === 'Proposed Bike Trail' ? '2px dotted #A62706' :
+              type === 'Shared Roadway (Bikes and Automobiles)' ? '2px solid #CF6709' :
+                type === 'Bikes and Pedestrians Only' ? '2px solid #F8ED88' :
+                  '2px solid #A28FC7';
     }
   </script>
 </body>
