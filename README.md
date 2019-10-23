@@ -156,14 +156,14 @@ We're now ready to start importing our data into an interactive Leaflet map!
 
 ## Interactive Map
 
-This webmap will utilize Leaflet libraries to allow for cartographic visualization and interactivity within the browser.
+This webmap will utilize Leaflet's javascript library to allow for cartographic visualization and interactivity within the browser.
 
-Other libraries used in this map
+Other libraries used in this map:
  - jquery to request json data from the remote repository
 
 ### Establish a figure/ground perspective and a visual hierarchy.
 
-First its important analyze the data and consider what this information is intended to represent.
+First, take a look at the data and consider what this information is intended to represent.
 
 1. County Shape (a polygon encompassing nearly all the other data)
 2. City Limit Shape (a polygon mostly within the county data above)
@@ -180,15 +180,15 @@ Trails is the most interesting layer,as it has subtypes which allow for graphica
 
 Schools sits atop all other layers and stands out, scattered across the map page, as it are the only point data.
 
-The map is bounded to keep the viewer from slipping too far away from the map data, while zoom limits are also in place to prevent a user from zooming too far away from the data, while also conveying the extent of the dataset.  
+
 
 #### Layering & Styling
 To achieve the desired figure/ground and related hierarchy, the following layers and colors were established atop a baselayer (achieved in CSS as parameter for `map`  `background: rgba(0, 0, 0, 0.75`);
 
 0. Black Background
 1.  ![labels](images/baselayer.png "base layer")Label-only Carto Basemap
-2. County
-3. City Limits
+2. ![county](images/county.png "county")County
+3. ![city limits](images/limit.png "City Limits")City Limits
 4. Trails
     1. ![proposed](images/proposed.png "proposed") Proposed 
     2. ![shared](images/shared.png "shared")Shared 
@@ -203,16 +203,17 @@ Colors and other parameters were set for the five types of trails, as shown belo
 
 
 ### Interactivity
-#### map constraints
+
+#### Map Constraints
 Constraining the browser to the area of interest is achieved via limiting Zoom levels and bounding the map to a geographic area.  
 
-Initial zoom was set to fill the frame with data.  
+Initial zoom was set to fill the frame with data, rather to show the full extent of the datasets. 
 
-
+The map is bounded to keep the viewer from slipping too far away from the map data, while zoom limits are also in place to prevent a user from zooming too far away from the data, while also conveying the extent of the dataset.  
 
 #### Tooltip
 
-##### Rollover response on Schools Layer
+##### Mouseover behavior on Schools Layer
 
 Upon mouseover behavior atop the Schools layer, a popup will display the school's name, concatenated to include the type of school.  
 
