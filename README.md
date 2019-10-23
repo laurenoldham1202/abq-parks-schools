@@ -199,6 +199,8 @@ To achieve the desired figure/ground and related hierarchy, the following layers
 
 
 Colors and other parameters were set for the five types of trails, as shown below. 
+
+
 ![colors](images/style.png "maps colors")
 
 
