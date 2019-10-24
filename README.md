@@ -156,14 +156,14 @@ We're now ready to start importing our data into an interactive Leaflet map!
 
 ## Interactive Map
 
-This webmap will utilize Leaflet libraries to allow for cartographic visualization and interactivity within the browser.
+This webmap will utilize Leaflet's javascript library to allow for cartographic visualization and interactivity within the browser.
 
-Other libraries used in this map
+Other libraries used in this map:
  - jquery to request json data from the remote repository
 
 ### Establish a figure/ground perspective and a visual hierarchy.
 
-First its important analyze the data and consider what this information is intended to represent.
+First, take a look at the data and consider what this information is intended to represent.
 
 1. County Shape (a polygon encompassing nearly all the other data)
 2. City Limit Shape (a polygon mostly within the county data above)
@@ -174,62 +174,55 @@ First its important analyze the data and consider what this information is inten
     4. Other
 4. School Points (points scattered within City Limits)
 
-County and City Limits function in the background atop a dark baselayer, with trails and schools in the foreground.  The background layers should be a few shades lighter than the baselayer.  Foreground layers will have more contrast than these layers.  
+County and City Limits function in the background atop a darker baselayer, with trails and schools in the foreground.  The background layers should be a few shades lighter than the baselayer.  Foreground layers will have more contrast than these layers.  
 
-Trails is the most interesting layer, as it has subtypes which allow for graphical variation,and will define most viewer's knowledge of the geography of Albuquerque, due to concentrations and distribution of trail data. The majority of which is along or parallel to existing transportation corridors.  
+Trails is the most interesting layer,as it has subtypes which allow for graphical variation,and will define most viewer's knowledge of the geography of Albuquerque, due to concentrations and distribution of trail data. The majority of which is along or parallel to existing transportation corridors.  
 
 Schools sits atop all other layers and stands out, scattered across the map page, as it are the only point data.
 
-The map is bounded to keep the viewer from slipping too far away from the map data, while zoom limits are also in place to prevent a user from zooming too far away from the data, while also conveying the extent of the dataset.  
+
 
 #### Layering & Styling
-To achieve the desired figure/ground and related hierarchy, the following layers and colors were established. 
+To achieve the desired figure/ground and related hierarchy, the following layers and colors were established atop a baselayer.
 
-0. Baselayer (achieved in CSS as parameter for `map`  `background: rgba(0, 0, 0, 0.75`);
-1. County (#263238 - very dark grayish blue)
-2. City Limits (#616161 - very dark gray )
-3. Trails
-    1. Proposed (orange with half opacity)
-    3. Shared (#FDD835 - yellow)
-    4. Bikes and Pedestrians Only (#e0e0e0 - very light gray)
-    5. Other (#7cb342 - moderate green)
-    <!-- 6. Hiking Only ( ) -->
-<!-- would be interesting here to consider subtypes for proposed (shared or bike/ped only which could be half opacity of the existing trail color) -->
- -->
-4. Schools (##0097a7 - dark cyan)
+0. Black Background
+1. ![labels](images/baselayer.png "base layer") Label-only Carto Basemap
+2. ![county](images/county.png "county") County
+3. ![city limits](images/limit.png "city limits") City limits
+4. Trails
+    1. ![proposed](images/proposed.png "proposed") Proposed 
+    2. ![shared](images/shared.png "shared") Shared 
+    3. ![Bike and Pedestrian Only](images/bikeonly.png "Bike and Pedestrian Only ") Bike and Pedestrian Only 
+    4. Other
+5. ![schools](images/school.png "schools") Schools 
 
-<!-- proposed colors -->
-<!-- 
-#ffa000 - pure orange
-#FDD835 - yellow
-#e0e0e0 - very light gray
-#616161 - very dark gray 
-#263238 - very dark grayish blue
-#0097a7 - dark cyan
-#7cb342 - moderate green
--->
+
+
+Colors and other parameters were set for the five types of trails, as shown below. 
+
+
+![colors](images/style.png "colors")
+
 
 ### Interactivity
-#### map constraints
+
+#### Map Constraints
 Constraining the browser to the area of interest is achieved via limiting Zoom levels and bounding the map to a geographic area.  
 
-Initial zoom was set to fill the frame with data.  
+Initial zoom was set to fill the frame with data, rather to show the full extent of the datasets. 
 
-```javascript
-    const options = {
-        center: [35.086905, -106.645317],
-        zoom: 12, 
-        zoomLevel: 0,
-        minZoom: 11,
-        maxZoom: 16,
-        maxBounds: [[35.269168, -106.383361], [34.91915, -106.84547]]
-    };
-```
+The map is bounded to keep the viewer from slipping too far away from the map data, while zoom limits are also in place to prevent a user from zooming too far away from the data, while also conveying the extent of the dataset.  
 
 #### Tooltip
 
-### Rollover response on Trails Layer
+##### Mouseover behavior on Schools Layer
 
-Upon rollover a tooltip will follow the mouse cursor showing showing concatenated string with most relevant data (name, type, length, etc.).
+Upon mouseover behavior atop the Schools layer, a popup will display the school's name, concatenated to include the type of school.  
 
- 
+![rollover](images/rollover.png "rollover")
+
+ #### Legend
+
+ To help viewer's differentiate between the types of bike trails, a legend has been provided.  
+
+ ![legend](images/legend.png "legend")
