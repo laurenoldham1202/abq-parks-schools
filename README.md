@@ -183,25 +183,25 @@ Schools sits atop all other layers and stands out, scattered across the map page
 
 
 #### Layering & Styling
-To achieve the desired figure/ground and related hierarchy, the following layers and colors were established atop a baselayer (achieved in CSS as parameter for `map`  `background: rgba(0, 0, 0, 0.75`);
+To achieve the desired figure/ground and related hierarchy, the following layers and colors were established atop a baselayer.
 
 0. Black Background
-1.  ![labels](images/baselayer.png "base layer")Label-only Carto Basemap
-2. ![county](images/county.png "county")County
-3. ![city limits](images/limit.png "City Limits")City Limits
+1. ![labels](images/baselayer.png "base layer") Label-only Carto Basemap
+2. ![county](images/county.png "county") County
+3. ![city limits](images/limit.png "city limits") City limits
 4. Trails
     1. ![proposed](images/proposed.png "proposed") Proposed 
-    2. ![shared](images/shared.png "shared")Shared 
-    3. ![Bike and Pedestrian Only](images/bikeonly.png "bike and pedestrian only")Bike and Pedestrian Only 
+    2. ![shared](images/shared.png "shared") Shared 
+    3. ![Bike and Pedestrian Only](images/bikeonly.png "Bike and Pedestrian Only ") Bike and Pedestrian Only 
     4. Other
-5. ![schools](images/school.png "schools")Schools 
+5. ![schools](images/school.png "schools") Schools 
 
 
 
 Colors and other parameters were set for the five types of trails, as shown below. 
 
 
-![colors](images/style.png "maps colors")
+![colors](images/style.png "colors")
 
 
 ### Interactivity
